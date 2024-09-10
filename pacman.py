@@ -112,18 +112,27 @@ def move():
     dot(20, 'yellow')
 
     for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
+        # Aquí los fantasmas buscan la dirección más cercana al pacman
+        options = [
+            vector(5, 0),
+            vector(-5, 0),
+            vector(0, 5),
+            vector(0, -5),
+        ]
+        
+        # Filtrar solo las direcciones válidas
+        valid_options = [option for option in options if valid(point + option)]
+        
+        # Elegir la dirección que minimice la distancia al pacman
+        min_distance = float('inf')
+        best_course = course
+        for option in valid_options:
+            distance = abs((point + option) - pacman)
+            if distance < min_distance:
+                min_distance = distance
+                best_course = option
+
+        point.move(best_course)
 
         up()
         goto(point.x + 10, point.y + 10)
